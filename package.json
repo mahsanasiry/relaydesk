@@ -5,7 +5,7 @@
   "description": "Request tracking for small async teams, with the reason work is stuck made visible.",
   "type": "module",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "dev": "next dev",
@@ -17,7 +17,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts",
+    "seed:reset": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts --reset"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.2",
