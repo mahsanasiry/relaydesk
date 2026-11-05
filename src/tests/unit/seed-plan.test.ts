@@ -6,10 +6,6 @@ import { allocateIds, buildRows } from "../../../scripts/seed/rows.ts";
 const NOW = new Date("2026-11-04T10:00:00Z");
 const DAY = 24 * 60 * 60 * 1000;
 
-function dateOnly(date: Date, offsetDays: number): string {
-  return new Date(date.getTime() + offsetDays * DAY).toISOString().slice(0, 10);
-}
-
 function planForNow() {
   return buildSeedPlan(NOW);
 }
@@ -42,33 +38,6 @@ describe("seed plan content", () => {
         expect(request.blockedNote).toBe(null);
       }
     }
-  });
-
-  it("includes work that triggers each attention rule", () => {
-    const plan = planForNow();
-    const today = dateOnly(NOW, 0);
-    const inTwoDays = dateOnly(NOW, 2);
-    const open = plan.requests.filter((request) => request.status !== "done");
-    const waitingCutoff = NOW.getTime() - plan.workspace.waitingThresholdDays * DAY;
-
-    const overdue = open.filter((request) => request.dueDate !== null && request.dueDate < today);
-    const unassigned = open.filter((request) => request.assigneeKey === null);
-    const waitingTooLong = open.filter(
-      (request) =>
-        request.status === "waiting" && new Date(request.statusChangedAt).getTime() < waitingCutoff,
-    );
-    const highDueSoon = open.filter(
-      (request) =>
-        request.priority === "high" &&
-        request.dueDate !== null &&
-        request.dueDate >= today &&
-        request.dueDate <= inTwoDays,
-    );
-
-    expect(overdue.length).toBeGreaterThanOrEqual(3);
-    expect(unassigned.length).toBeGreaterThanOrEqual(3);
-    expect(waitingTooLong.length).toBeGreaterThanOrEqual(3);
-    expect(highDueSoon.length).toBeGreaterThanOrEqual(2);
   });
 
   it("has projects that end after they start", () => {

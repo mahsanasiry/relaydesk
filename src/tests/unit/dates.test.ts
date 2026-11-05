@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { differenceInCalendarDays } from "@/lib/utils/dates";
+import { differenceInCalendarDays, formatDateOnly, parseDateOnly } from "@/lib/utils/dates";
 
 describe("differenceInCalendarDays", () => {
   it("returns zero for two moments on the same UTC day", () => {
@@ -28,5 +28,19 @@ describe("differenceInCalendarDays", () => {
     const yearEnd = new Date("2026-12-30T00:00:00Z");
 
     expect(differenceInCalendarDays(newYear, yearEnd)).toBe(3);
+  });
+});
+
+describe("parseDateOnly and formatDateOnly", () => {
+  it("read a plain date as midnight UTC", () => {
+    expect(parseDateOnly("2026-11-04").toISOString()).toBe("2026-11-04T00:00:00.000Z");
+  });
+
+  it("write the UTC day of a date", () => {
+    expect(formatDateOnly(new Date("2026-11-04T23:59:00Z"))).toBe("2026-11-04");
+  });
+
+  it("round-trip a date", () => {
+    expect(formatDateOnly(parseDateOnly("2027-02-28"))).toBe("2027-02-28");
   });
 });

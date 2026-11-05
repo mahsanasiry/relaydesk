@@ -14,3 +14,13 @@ function utcDayNumber(date: Date): number {
 export function differenceInCalendarDays(later: Date, earlier: Date): number {
   return utcDayNumber(later) - utcDayNumber(earlier);
 }
+
+/** Reads a `YYYY-MM-DD` value as midnight UTC. */
+export function parseDateOnly(value: string): Date {
+  return new Date(`${value}T00:00:00Z`);
+}
+
+/** The `YYYY-MM-DD` form of a date, using its UTC day. */
+export function formatDateOnly(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
