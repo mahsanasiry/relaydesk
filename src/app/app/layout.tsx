@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
-import { SignOutButton } from "@/features/auth/sign-out-button";
+import { AppShell } from "@/components/layout/app-shell";
 import { LOGIN_PATH } from "@/lib/auth/redirects";
+import { QueryProvider } from "@/lib/query/provider";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -20,22 +21,12 @@ export default async function AppLayout({ children }: Readonly<{ children: React
     .select("display_name")
     .eq("id", user.id)
     .maybeSingle();
-  const name = typeof profile?.display_name === "string" ? profile.display_name : user.email;
+  const name =
+    typeof profile?.display_name === "string" ? profile.display_name : (user.email ?? "Account");
 
   return (
-    <>
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-          <span className="text-lg font-semibold">RelayDesk</span>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{name}</span>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
-      <main id="main" className="mx-auto max-w-5xl px-4 py-8">
-        {children}
-      </main>
-    </>
+    <QueryProvider>
+      <AppShell userName={name}>{children}</AppShell>
+    </QueryProvider>
   );
 }
