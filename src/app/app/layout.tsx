@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
+import { ToastProvider } from "@/components/ui/toast";
 import { CurrentUserProvider } from "@/features/auth/current-user";
 import { LOGIN_PATH } from "@/lib/auth/redirects";
 import { QueryProvider } from "@/lib/query/provider";
@@ -19,16 +20,24 @@ export default async function AppLayout({ children }: Readonly<{ children: React
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name,workspace_id")
     .eq("id", user.id)
     .maybeSingle();
+  // Redirecting to login here would loop, because the proxy sends signed-in visitors back.
+  if (typeof profile?.workspace_id !== "string") {
+    throw new Error("This account has no workspace. Contact the person who invited you.");
+  }
   const name =
-    typeof profile?.display_name === "string" ? profile.display_name : (user.email ?? "Account");
+    typeof profile.display_name === "string" ? profile.display_name : (user.email ?? "Account");
 
   return (
     <QueryProvider>
-      <CurrentUserProvider user={{ id: user.id, displayName: name }}>
-        <AppShell userName={name}>{children}</AppShell>
+      <CurrentUserProvider
+        user={{ id: user.id, displayName: name, workspaceId: profile.workspace_id }}
+      >
+        <ToastProvider>
+          <AppShell userName={name}>{children}</AppShell>
+        </ToastProvider>
       </CurrentUserProvider>
     </QueryProvider>
   );

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 export interface CurrentUser {
   id: string;
   displayName: string;
+  workspaceId: string;
 }
 
 const CurrentUserContext = createContext<CurrentUser | null>(null);
