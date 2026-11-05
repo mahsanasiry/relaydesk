@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
+import { CurrentUserProvider } from "@/features/auth/current-user";
 import { LOGIN_PATH } from "@/lib/auth/redirects";
 import { QueryProvider } from "@/lib/query/provider";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -26,7 +27,9 @@ export default async function AppLayout({ children }: Readonly<{ children: React
 
   return (
     <QueryProvider>
-      <AppShell userName={name}>{children}</AppShell>
+      <CurrentUserProvider user={{ id: user.id, displayName: name }}>
+        <AppShell userName={name}>{children}</AppShell>
+      </CurrentUserProvider>
     </QueryProvider>
   );
 }
