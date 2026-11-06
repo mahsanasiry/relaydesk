@@ -23,6 +23,7 @@ export function useAddComment(requestId: string, workspaceId: string) {
         client.invalidateQueries({ queryKey: queryKeys.requestComments(requestId) }),
         // Adding a comment is also an activity event.
         client.invalidateQueries({ queryKey: queryKeys.requestActivity(requestId) }),
+        client.invalidateQueries({ queryKey: queryKeys.activity }),
       ]),
   });
 }

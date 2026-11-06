@@ -40,6 +40,22 @@ export function mapActivityRecords(records: readonly ActivityRecord[]): Activity
   return events;
 }
 
+export async function fetchRecentActivity(
+  client: SupabaseClient,
+  limit: number,
+): Promise<ActivityEvent[]> {
+  const { data, error } = await client
+    .from("activity_events")
+    .select(COLUMNS)
+    .order("created_at", { ascending: false })
+    .order("id")
+    .limit(limit);
+  if (error) {
+    throw new Error("Could not load recent activity.", { cause: error });
+  }
+  return mapActivityRecords((data ?? []) as unknown as ActivityRecord[]);
+}
+
 export async function fetchRequestActivity(
   client: SupabaseClient,
   requestId: string,
