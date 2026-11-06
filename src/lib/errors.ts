@@ -28,6 +28,9 @@ export function describeDataError(error: unknown): string {
   if (code === "23503") {
     return "A linked project or person no longer exists. Reload the page and try again.";
   }
+  if (code === "23505") {
+    return "That already exists.";
+  }
   if (code === "23514" || code === "22001") {
     return "One of the values is not allowed. Check the form and try again.";
   }

@@ -32,6 +32,13 @@ vi.mock("@/features/requests/detail-queries", () => ({
   useDeleteRequest: () => ({ mutateAsync: mocks.remove, isPending: false }),
 }));
 
+// The sections below the form have their own tests and their own data hooks.
+vi.mock("@/features/requests/components/related-requests", () => ({ RelatedRequests: () => null }));
+vi.mock("@/features/comments/components/comments-section", () => ({ CommentsSection: () => null }));
+vi.mock("@/features/activity/components/activity-timeline", () => ({
+  ActivityTimeline: () => null,
+}));
+
 // jsdom does not implement modal dialogs, so open and close are modelled by the attribute.
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {

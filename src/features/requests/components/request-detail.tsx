@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { ActivityTimeline } from "@/features/activity/components/activity-timeline";
+import { CommentsSection } from "@/features/comments/components/comments-section";
 import { Alert } from "@/components/ui/alert";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -19,6 +21,7 @@ import { BLOCKED_REASON_LABELS } from "../labels";
 import { toFormValues } from "../payload";
 import { StatusBadge } from "./badges";
 import { ListSkeleton } from "./list-skeleton";
+import { RelatedRequests } from "./related-requests";
 import { RequestForm } from "./request-form";
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {
@@ -122,19 +125,24 @@ export function RequestDetail({ requestId }: { requestId: string }) {
       {deleteError ? <Alert tone="error">{deleteError}</Alert> : null}
 
       <div className="grid gap-8 lg:grid-cols-3">
-        <section aria-labelledby="edit-heading" className="lg:col-span-2">
-          <h2 id="edit-heading" className="mb-4 text-lg font-semibold">
-            Details
-          </h2>
-          <RequestForm
-            defaults={toFormValues(request)}
-            members={members.data}
-            projects={projects.data}
-            submitLabel="Save changes"
-            savingLabel="Saving..."
-            onSubmit={save}
-          />
-        </section>
+        <div className="space-y-10 lg:col-span-2">
+          <section aria-labelledby="edit-heading">
+            <h2 id="edit-heading" className="mb-4 text-lg font-semibold">
+              Details
+            </h2>
+            <RequestForm
+              defaults={toFormValues(request)}
+              members={members.data}
+              projects={projects.data}
+              submitLabel="Save changes"
+              savingLabel="Saving..."
+              onSubmit={save}
+            />
+          </section>
+          <RelatedRequests requestId={requestId} />
+          <CommentsSection requestId={requestId} />
+          <ActivityTimeline requestId={requestId} />
+        </div>
 
         <aside aria-labelledby="facts-heading" className="space-y-4">
           <h2 id="facts-heading" className="text-lg font-semibold">

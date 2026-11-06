@@ -27,6 +27,12 @@ describe("describeDataError", () => {
     ).toContain("no longer exists");
   });
 
+  it("explains a duplicate", () => {
+    expect(describeDataError(failure({ code: "23505", message: "duplicate key" }))).toBe(
+      "That already exists.",
+    );
+  });
+
   it("explains a network failure", () => {
     expect(
       describeDataError(failure({ code: "", message: "TypeError: Failed to fetch" })),
