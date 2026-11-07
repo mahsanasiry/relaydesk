@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { RequestRow } from "../api";
+import { SelectBox } from "./select-box";
 import { PriorityBadge, StatusBadge } from "./badges";
 import { DueCell, assigneeText, blockedText, projectText } from "./request-details";
 import type { RowContext } from "./request-details";
@@ -10,9 +11,13 @@ const cell = "px-3 py-3 align-top";
 export function RequestTable({
   requests,
   context,
+  selected,
+  onToggle,
 }: {
   requests: readonly RequestRow[];
   context: RowContext;
+  selected: ReadonlySet<string>;
+  onToggle: (id: string) => void;
 }) {
   return (
     <div className="hidden overflow-x-auto rounded-lg border border-border bg-surface md:block">
@@ -20,6 +25,9 @@ export function RequestTable({
         <caption className="sr-only">Requests</caption>
         <thead className="border-b border-border">
           <tr>
+            <th scope="col" className={headerCell}>
+              <span className="sr-only">Select</span>
+            </th>
             <th scope="col" className={headerCell}>
               Title
             </th>
@@ -45,6 +53,9 @@ export function RequestTable({
             const reason = blockedText(request);
             return (
               <tr key={request.id}>
+                <td className={cell}>
+                  <SelectBox request={request} selected={selected} onToggle={onToggle} />
+                </td>
                 <th scope="row" className={`${cell} font-medium`}>
                   <Link href={`/app/requests/${request.id}`} className="text-primary underline">
                     {request.title}

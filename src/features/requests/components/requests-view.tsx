@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Pagination } from "@/components/shared/pagination";
 import { Alert } from "@/components/ui/alert";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { useCurrentUser } from "@/features/auth/current-user";
 import { useMembers } from "@/features/members/queries";
 import { useProjects } from "@/features/projects/queries";
+import { useBulkUpdateRequests } from "../bulk-queries";
+import { describeBulkResult, toggleId, togglePage, visibleSelection } from "../bulk";
+import type { BulkAction, BulkPatch } from "../bulk";
 import {
   DEFAULT_REQUEST_QUERY,
   hasActiveFilters,
@@ -20,6 +24,7 @@ import {
 } from "../filters";
 import type { RequestQuery } from "../filters";
 import { useRequests } from "../queries";
+import { BulkBar } from "./bulk-bar";
 import { ListSkeleton } from "./list-skeleton";
 import { RequestCards } from "./request-cards";
 import { RequestFilters } from "./request-filters";
@@ -33,6 +38,9 @@ export function RequestsView() {
   const requests = useRequests();
   const members = useMembers();
   const projects = useProjects();
+  const { notify } = useToast();
+  const bulk = useBulkUpdateRequests();
+  const [picked, setPicked] = useState<ReadonlySet<string>>(new Set());
 
   const query = useMemo(() => parseRequestQuery(searchParams), [searchParams]);
   const memberNames = useMemo(
@@ -49,6 +57,18 @@ export function RequestsView() {
       requests.data ? selectRequests(requests.data, query, { currentUserId: user.id, now }) : null,
     [requests.data, query, user.id, now],
   );
+
+  // Only rows on screen count, so an action never reaches requests hidden by a filter or page.
+  const pageIds = useMemo(() => (result?.items ?? []).map((item) => item.id), [result]);
+  const selected = useMemo(() => visibleSelection(picked, pageIds), [picked, pageIds]);
+  const allSelected = pageIds.length > 0 && selected.size === pageIds.length;
+
+  async function applyBulk(action: BulkAction, patch: BulkPatch) {
+    const ids = [...selected];
+    const updated = await bulk.mutateAsync({ ids, patch });
+    notify("success", describeBulkResult(action, updated, ids.length));
+    setPicked(new Set());
+  }
 
   const hrefFor = (next: RequestQuery) => {
     const text = serializeRequestQuery(next);
@@ -119,11 +139,40 @@ export function RequestsView() {
         )
       ) : (
         <>
-          <p aria-live="polite" className="text-sm text-muted-foreground">
-            {result.total === 1 ? "1 request" : `${result.total} requests`}
-          </p>
-          <RequestTable requests={result.items} context={{ memberNames, projectNames, now }} />
-          <RequestCards requests={result.items} context={{ memberNames, projectNames, now }} />
+          {selected.size > 0 ? (
+            <BulkBar
+              count={selected.size}
+              members={members.data ?? []}
+              onApply={applyBulk}
+              onClear={() => setPicked(new Set())}
+            />
+          ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p aria-live="polite" className="text-sm text-muted-foreground">
+              {result.total === 1 ? "1 request" : `${result.total} requests`}
+            </p>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={() => setPicked(togglePage(selected, pageIds))}
+                className="size-5 accent-primary"
+              />
+              Select all on this page
+            </label>
+          </div>
+          <RequestTable
+            requests={result.items}
+            context={{ memberNames, projectNames, now }}
+            selected={selected}
+            onToggle={(id) => setPicked(toggleId(selected, id))}
+          />
+          <RequestCards
+            requests={result.items}
+            context={{ memberNames, projectNames, now }}
+            selected={selected}
+            onToggle={(id) => setPicked(toggleId(selected, id))}
+          />
           <Pagination
             page={result.page}
             pageCount={result.pageCount}

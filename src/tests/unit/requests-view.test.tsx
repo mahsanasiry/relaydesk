@@ -13,6 +13,8 @@ const mocks = vi.hoisted(() => ({
   requests: {} as Record<string, unknown>,
   members: {} as Record<string, unknown>,
   projects: {} as Record<string, unknown>,
+  bulk: vi.fn(),
+  notify: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -20,9 +22,21 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/app/requests",
   useSearchParams: () => mocks.search,
 }));
-vi.mock("@/features/requests/queries", () => ({ useRequests: () => mocks.requests }));
-vi.mock("@/features/members/queries", () => ({ useMembers: () => mocks.members }));
-vi.mock("@/features/projects/queries", () => ({ useProjects: () => mocks.projects }));
+vi.mock("@/features/requests/queries", () => ({
+  useRequests: () => mocks.requests,
+}));
+vi.mock("@/features/members/queries", () => ({
+  useMembers: () => mocks.members,
+}));
+vi.mock("@/features/projects/queries", () => ({
+  useProjects: () => mocks.projects,
+}));
+vi.mock("@/components/ui/toast", () => ({
+  useToast: () => ({ notify: mocks.notify }),
+}));
+vi.mock("@/features/requests/bulk-queries", () => ({
+  useBulkUpdateRequests: () => ({ mutateAsync: mocks.bulk }),
+}));
 vi.mock("@/features/auth/current-user", () => ({
   useCurrentUser: () => ({ id: "me-id", displayName: "Ada" }),
 }));
@@ -62,6 +76,8 @@ function table() {
 beforeEach(() => {
   mocks.replace.mockReset();
   mocks.refetch.mockReset();
+  mocks.bulk.mockReset();
+  mocks.notify.mockReset();
   mocks.search = new URLSearchParams();
   load([]);
   mocks.members = {
@@ -154,10 +170,14 @@ describe("RequestsView", () => {
 
     await user.type(screen.getByLabelText("Search titles"), "login");
     await user.click(screen.getByRole("button", { name: "Search" }));
-    expect(mocks.replace).toHaveBeenLastCalledWith("/app/requests?q=login", { scroll: false });
+    expect(mocks.replace).toHaveBeenLastCalledWith("/app/requests?q=login", {
+      scroll: false,
+    });
 
     await user.selectOptions(screen.getByLabelText("Sort by"), "due");
-    expect(mocks.replace).toHaveBeenLastCalledWith("/app/requests?sort=due", { scroll: false });
+    expect(mocks.replace).toHaveBeenLastCalledWith("/app/requests?sort=due", {
+      scroll: false,
+    });
   });
 
   it("offers a way out when filters match nothing", async () => {
@@ -169,7 +189,9 @@ describe("RequestsView", () => {
     expect(screen.getByText("No requests match these filters")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
 
-    expect(mocks.replace).toHaveBeenCalledWith("/app/requests", { scroll: false });
+    expect(mocks.replace).toHaveBeenCalledWith("/app/requests", {
+      scroll: false,
+    });
   });
 
   it("invites the first request when the workspace is empty", () => {
@@ -223,5 +245,41 @@ describe("RequestsView", () => {
 
     expect(within(table()).getAllByRole("row")).toHaveLength(6);
     expect(screen.getByRole("link", { name: "Previous" })).toHaveAttribute("href", "/app/requests");
+  });
+
+  it("selects rows and shows how many are selected", async () => {
+    const user = userEvent.setup();
+    load([request({ id: "a", title: "First" }), request({ id: "b", title: "Second" })]);
+    render(<RequestsView />);
+
+    expect(screen.queryByRole("region", { name: "Bulk actions" })).not.toBeInTheDocument();
+    await user.click(within(table()).getByRole("checkbox", { name: "Select First" }));
+
+    expect(screen.getByRole("region", { name: "Bulk actions" })).toHaveTextContent("1 selected");
+
+    await user.click(screen.getByRole("checkbox", { name: "Select all on this page" }));
+    expect(screen.getByText("2 selected")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox", { name: "Select all on this page" }));
+    expect(screen.queryByRole("region", { name: "Bulk actions" })).not.toBeInTheDocument();
+  });
+
+  it("applies a bulk change to the selected rows only, then clears the selection", async () => {
+    const user = userEvent.setup();
+    mocks.bulk.mockResolvedValue(1);
+    load([request({ id: "a", title: "First" }), request({ id: "b", title: "Second" })]);
+    render(<RequestsView />);
+
+    await user.click(within(table()).getByRole("checkbox", { name: "Select First" }));
+    await user.selectOptions(screen.getByLabelText("Action"), "priority");
+    await user.selectOptions(screen.getByLabelText("New priority"), "high");
+    await user.click(screen.getByRole("button", { name: "Apply" }));
+
+    expect(mocks.bulk).toHaveBeenCalledWith({
+      ids: ["a"],
+      patch: { priority: "high" },
+    });
+    expect(mocks.notify).toHaveBeenCalledWith("success", "1 request updated.");
+    expect(screen.queryByRole("region", { name: "Bulk actions" })).not.toBeInTheDocument();
   });
 });
