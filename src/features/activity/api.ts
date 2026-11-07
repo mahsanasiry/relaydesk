@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { ACTIVITY_TYPES } from "./model";
 import type { ActivityEvent, ActivityType } from "./model";
 
-interface ActivityRecord {
+export interface ActivityRecord {
   id: string;
   request_id: string | null;
   request_title: string;
@@ -12,7 +12,7 @@ interface ActivityRecord {
   created_at: string;
 }
 
-const COLUMNS = "id,request_id,request_title,actor_id,type,metadata,created_at";
+export const COLUMNS = "id,request_id,request_title,actor_id,type,metadata,created_at";
 export const REQUEST_ACTIVITY_LIMIT = 200;
 
 function isActivityType(value: string): value is ActivityType {

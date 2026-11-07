@@ -11,6 +11,7 @@ export const queryKeys = {
   // Workspace-wide activity sits under the requests key as well, so any change made through
   // the list key refreshes it too.
   activity: ["requests", "activity"] as const,
+  activityFeed: (query: string) => ["requests", "activity", "feed", query] as const,
   activityRecent: (limit: number) => ["requests", "activity", "recent", limit] as const,
   workspaceSettings: ["workspace", "settings"] as const,
   members: ["members"] as const,
