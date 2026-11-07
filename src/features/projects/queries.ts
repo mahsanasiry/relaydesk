@@ -1,31 +1,37 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query/keys";
 import { useSupabase } from "@/lib/supabase/use-supabase";
-import type { ProjectStatus } from "./model";
+import type { ProjectFormValues } from "@/lib/validation/project";
+import { createProject, fetchProjects, updateProject } from "./api";
+import type { Project } from "./api";
 
-export interface ProjectOption {
-  id: string;
-  name: string;
-  status: ProjectStatus;
-}
+/** What a dropdown of projects needs. */
+export type ProjectOption = Pick<Project, "id" | "name" | "status">;
 
 export function useProjects() {
   const supabase = useSupabase();
   return useQuery({
     queryKey: queryKeys.projects,
-    queryFn: async (): Promise<ProjectOption[]> => {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("id,name,status")
-        .order("name")
-        .order("id");
-      if (error) {
-        throw new Error("Could not load projects.", { cause: error });
-      }
-      // The client is not generated from the schema, so the row shape is stated here.
-      return (data ?? []) as unknown as ProjectOption[];
-    },
+    queryFn: () => fetchProjects(supabase),
+  });
+}
+
+export function useCreateProject(workspaceId: string) {
+  const supabase = useSupabase();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (values: ProjectFormValues) => createProject(supabase, workspaceId, values),
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.projects }),
+  });
+}
+
+export function useUpdateProject(id: string) {
+  const supabase = useSupabase();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (values: ProjectFormValues) => updateProject(supabase, id, values),
+    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.projects }),
   });
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { BLOCKED_NOTE_MAX_LENGTH } from "@/features/requests/status-change";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES, isBlockedReason } from "@/features/requests/model";
-import { formatDateOnly, parseDateOnly } from "@/lib/utils/dates";
+import { isRealDate } from "@/lib/utils/date-input";
 
 export const TITLE_MAX_LENGTH = 200;
 export const DESCRIPTION_MAX_LENGTH = 10_000;
@@ -21,12 +21,6 @@ export function parseLabels(text: string): string[] {
     }
   }
   return labels;
-}
-
-function isRealDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  // 2026-02-31 parses to March 3rd, so the round trip is what proves the date exists.
-  return formatDateOnly(parseDateOnly(value)) === value;
 }
 
 /**

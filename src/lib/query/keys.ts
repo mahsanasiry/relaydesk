@@ -14,5 +14,6 @@ export const queryKeys = {
   activityRecent: (limit: number) => ["requests", "activity", "recent", limit] as const,
   workspaceSettings: ["workspace", "settings"] as const,
   members: ["members"] as const,
+  clients: ["clients"] as const,
   projects: ["projects"] as const,
 };
