@@ -4,6 +4,9 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { AppShell } from "@/components/layout/app-shell";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/app/requests/new" }));
+vi.mock("@/features/notifications/components/notification-bell", () => ({
+  NotificationBell: () => <a href="/app/notifications">Notifications</a>,
+}));
 vi.mock("@/features/auth/sign-out-button", () => ({
   SignOutButton: () => <button type="button">Log out</button>,
 }));
@@ -86,7 +89,9 @@ describe("AppShell", () => {
     const { container } = renderShell();
 
     await user.click(screen.getByRole("button", { name: "Open menu" }));
-    const mobileNav = within(drawer(container)).getByRole("navigation", { name: "Main (mobile)" });
+    const mobileNav = within(drawer(container)).getByRole("navigation", {
+      name: "Main (mobile)",
+    });
     await user.click(within(mobileNav).getByRole("link", { name: "Projects" }));
 
     expect(drawer(container)).not.toHaveAttribute("open");
