@@ -37,6 +37,9 @@ vi.mock("@/components/ui/toast", () => ({
 vi.mock("@/features/requests/bulk-queries", () => ({
   useBulkUpdateRequests: () => ({ mutateAsync: mocks.bulk }),
 }));
+vi.mock("@/features/saved-views/components/saved-views", () => ({
+  SavedViews: () => null,
+}));
 vi.mock("@/features/auth/current-user", () => ({
   useCurrentUser: () => ({ id: "me-id", displayName: "Ada" }),
 }));

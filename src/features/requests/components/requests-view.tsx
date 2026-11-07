@@ -24,6 +24,7 @@ import {
 } from "../filters";
 import type { RequestQuery } from "../filters";
 import { useRequests } from "../queries";
+import { SavedViews } from "@/features/saved-views/components/saved-views";
 import { BulkBar } from "./bulk-bar";
 import { ListSkeleton } from "./list-skeleton";
 import { RequestCards } from "./request-cards";
@@ -87,6 +88,8 @@ export function RequestsView() {
           New request
         </Link>
       </div>
+
+      <SavedViews query={query} />
 
       <RequestFilters
         query={query}
