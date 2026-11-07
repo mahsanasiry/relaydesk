@@ -139,6 +139,10 @@ Requirements: Node.js 22.18 or newer (22.12 is enough to run the app; the seed s
 
 Pull requests and pushes to `main` run formatting, lint, typecheck, unit tests and a production build, plus an audit of production dependencies. The end-to-end workflow is started by hand from the Actions tab because it needs a Supabase project with demo data. It reads `E2E_SUPABASE_URL` and `E2E_SUPABASE_PUBLISHABLE_KEY` from repository secrets; it does not need the secret key.
 
+## Deployment
+
+The app runs on any host that can run Next.js. `docs/deployment.md` describes the setup used here: Supabase for the database and authentication, GitHub for the repository and CI, and Vercel for hosting. The only values the hosted app needs are the Supabase URL and the publishable key. The secret key is for the seed script and must never be added to the hosting environment.
+
 ## Trade-offs
 
 - **Lists are filtered in the browser.** Requests are loaded once and filtered, sorted and paginated on the client, which keeps filtering instant and the URL logic simple. It does not scale to tens of thousands of requests; loading stops at 10,000. The next step would be to move filtering into the query.
