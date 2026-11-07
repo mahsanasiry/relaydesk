@@ -9,6 +9,7 @@ import {
   presetQuery,
   validateViewName,
   viewHref,
+  visiblePresets,
 } from "@/features/saved-views/model";
 
 function preset(id: string) {
@@ -20,7 +21,7 @@ function preset(id: string) {
 describe("presets", () => {
   it("serialize to the URLs the list understands", () => {
     expect(presetQuery(preset("my-open"))).toBe("status=open&assignee=me");
-    expect(presetQuery(preset("high-priority"))).toBe("priority=high");
+    expect(presetQuery(preset("high-priority"))).toBe("status=open&priority=high");
     expect(presetQuery(preset("waiting-client"))).toBe("status=blocked&reason=waiting_for_client");
     expect(presetQuery(preset("overdue"))).toBe("due=overdue");
   });
@@ -32,6 +33,23 @@ describe("presets", () => {
       "Waiting for Client",
       "Overdue",
     ]);
+  });
+});
+
+describe("visiblePresets", () => {
+  it("lists every preset when nothing is saved", () => {
+    expect(visiblePresets(new Set()).map((item) => item.id)).toEqual([
+      "my-open",
+      "high-priority",
+      "waiting-client",
+      "overdue",
+    ]);
+  });
+
+  it("hides a preset that a saved view already covers", () => {
+    const shown = visiblePresets(new Set(["due=overdue", "status=open&assignee=me"]));
+
+    expect(shown.map((item) => item.id)).toEqual(["high-priority", "waiting-client"]);
   });
 });
 

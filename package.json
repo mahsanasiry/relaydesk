@@ -19,10 +19,13 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "seed": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts",
-    "seed:reset": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts --reset"
+    "seed:reset": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts --reset",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.2",
+    "@opennextjs/cloudflare": "^1.20.16",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
     "@tanstack/react-query": "^5.105.3",
@@ -52,6 +55,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.4",
     "typescript": "~6.0.0",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "^4.158.0"
   }
 }

@@ -19,7 +19,11 @@ export interface ViewPreset {
   query: Partial<RequestQuery>;
 }
 
-/** Built in, so they work for a new account before anything is saved. */
+/**
+ * Built in, so they work before anything is saved. New accounts are given the same four views
+ * as saved copies by the database, so a preset is only listed while no saved view has its
+ * filters. Deleting a saved copy brings its preset back.
+ */
 export const VIEW_PRESETS: readonly ViewPreset[] = [
   {
     id: "my-open",
@@ -32,7 +36,7 @@ export const VIEW_PRESETS: readonly ViewPreset[] = [
   {
     id: "high-priority",
     name: "High Priority",
-    query: { priorities: ["high"] },
+    query: { priorities: ["high"], statuses: ["new", "in_progress", "waiting", "blocked"] },
   },
   {
     id: "waiting-client",
@@ -45,6 +49,10 @@ export const VIEW_PRESETS: readonly ViewPreset[] = [
 /** The canonical text for a set of filters, without the page, so equal views compare equal. */
 export function canonicalViewQuery(query: RequestQuery): string {
   return serializeRequestQuery({ ...query, page: 1 });
+}
+
+export function visiblePresets(savedQueries: ReadonlySet<string>): ViewPreset[] {
+  return VIEW_PRESETS.filter((preset) => !savedQueries.has(presetQuery(preset)));
 }
 
 export function presetQuery(preset: ViewPreset): string {

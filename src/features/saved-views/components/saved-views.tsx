@@ -12,7 +12,6 @@ import type { RequestQuery } from "@/features/requests/filters";
 import { describeDataError } from "@/lib/errors";
 import {
   VIEW_NAME_MAX_LENGTH,
-  VIEW_PRESETS,
   canSaveView,
   canonicalViewQuery,
   isActiveView,
@@ -20,6 +19,7 @@ import {
   presetQuery,
   validateViewName,
   viewHref,
+  visiblePresets,
 } from "../model";
 import type { SavedView } from "../model";
 import {
@@ -59,6 +59,10 @@ export function SavedViews({ query }: { query: RequestQuery }) {
     [views.data],
   );
   const existing = views.data ?? [];
+  const presets = useMemo(
+    () => visiblePresets(new Set(saved.map((item) => item.canonical))),
+    [saved],
+  );
 
   async function save() {
     const problem = validateViewName(name, existing);
@@ -119,8 +123,8 @@ export function SavedViews({ query }: { query: RequestQuery }) {
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <ul className="flex flex-wrap gap-2">
-        {VIEW_PRESETS.map((preset) => {
+      <ul aria-label="Preset views" className="flex flex-wrap gap-2">
+        {presets.map((preset) => {
           const canonical = presetQuery(preset);
           return (
             <li key={preset.id}>

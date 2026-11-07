@@ -62,19 +62,29 @@ describe("SavedViews", () => {
     );
     expect(screen.getByRole("link", { name: "High Priority" })).toHaveAttribute(
       "href",
-      "/app/requests?priority=high",
+      "/app/requests?status=open&priority=high",
     );
     expect(screen.getByRole("link", { name: "Waiting for Client" })).toBeInTheDocument();
   });
 
   it("marks the view that matches the current filters", () => {
-    render(<SavedViews query={filtered} />);
+    render(<SavedViews query={{ ...DEFAULT_REQUEST_QUERY, overdueOnly: true }} />);
 
-    expect(screen.getByRole("link", { name: "High Priority" })).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
-    expect(screen.getByRole("link", { name: "Overdue" })).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link", { name: "Overdue" })).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: "High Priority" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("does not list a preset twice when a saved view already has its filters", () => {
+    setViews([{ id: "v1", name: "Overdue", query: "due=overdue" }]);
+    render(<SavedViews query={DEFAULT_REQUEST_QUERY} />);
+
+    const presets = within(screen.getByRole("list", { name: "Preset views" }));
+    expect(presets.queryByRole("link", { name: "Overdue" })).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole("list", { name: "Saved views" })).getByRole("link", {
+        name: "Overdue",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("offers to save only when filters are active", () => {

@@ -141,7 +141,7 @@ Pull requests and pushes to `main` run formatting, lint, typecheck, unit tests a
 
 ## Deployment
 
-The app runs on any host that can run Next.js. `docs/deployment.md` describes the setup used here: Supabase for the database and authentication, GitHub for the repository and CI, and Vercel for hosting. The only values the hosted app needs are the Supabase URL and the publishable key. The secret key is for the seed script and must never be added to the hosting environment.
+The app runs on Cloudflare Workers through the OpenNext adapter. `docs/deployment.md` describes the full setup: Supabase for the database and authentication, GitHub for the repository and CI, and Cloudflare for hosting. The only values the hosted app needs are the Supabase URL and the publishable key. The secret key is for the seed script and must never be added to the hosting environment.
 
 ## Trade-offs
 
