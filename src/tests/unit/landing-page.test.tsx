@@ -18,6 +18,12 @@ describe("landing page", () => {
     expect(screen.getByRole("link", { name: "Get started" })).toHaveAttribute("href", "/signup");
   });
 
+  it("opens the demo workspace from a plain link", () => {
+    render(<Home />);
+
+    expect(screen.getByRole("link", { name: "Try the demo" })).toHaveAttribute("href", "/demo");
+  });
+
   it("describes each way RelayDesk differs from a task list", () => {
     render(<Home />);
 

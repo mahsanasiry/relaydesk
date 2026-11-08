@@ -26,6 +26,14 @@ test.describe("authentication", () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
+  test("opens the demo workspace without credentials", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByRole("link", { name: "Try the demo" }).click();
+
+    await expect(page).toHaveURL(/\/app\/dashboard$/);
+    await expect(page.getByRole("heading", { name: "Dashboard", level: 1 })).toBeVisible();
+  });
+
   test("signs out", async ({ page }) => {
     await logIn(page);
 

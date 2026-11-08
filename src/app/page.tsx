@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/layout/brand";
 
 const primaryLink =
-  "inline-flex min-h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90";
+  "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90";
 const secondaryLink =
-  "inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-surface px-4 text-sm font-medium hover:bg-muted";
+  "inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold shadow-sm transition-colors hover:bg-muted";
 
 const differences = [
   {
@@ -25,7 +26,10 @@ export default function Home() {
     <>
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="text-lg font-semibold">RelayDesk</span>
+          <span className="inline-flex items-center gap-2.5 text-lg font-bold">
+            <BrandMark />
+            RelayDesk
+          </span>
           <nav aria-label="Account" className="flex items-center gap-2">
             <Link href="/login" className={secondaryLink}>
               Log in
@@ -39,7 +43,7 @@ export default function Home() {
 
       <main id="main" className="mx-auto max-w-5xl px-4 py-12 sm:py-20">
         <section aria-labelledby="hero-heading" className="max-w-2xl">
-          <h1 id="hero-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 id="hero-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
             See why work is stuck, not just that it is.
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
@@ -47,11 +51,19 @@ export default function Home() {
             and meetings. RelayDesk shows who owns it, what is urgent, what is waiting on someone
             else, and what is actually done.
           </p>
-          <div className="mt-8">
-            <Link href="/signup" className={primaryLink}>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {/* A plain link on purpose: the route signs in on the server, so the client router
+                must not prefetch it or handle the click. */}
+            <a href="/demo" className={primaryLink}>
+              Try the demo
+            </a>
+            <Link href="/signup" className={secondaryLink}>
               Get started
             </Link>
           </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            The demo opens a workspace filled with sample requests. No sign-up needed.
+          </p>
         </section>
 
         <section aria-labelledby="differences-heading" className="mt-16">
@@ -60,7 +72,10 @@ export default function Home() {
           </h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-3">
             {differences.map((item) => (
-              <li key={item.title} className="rounded-lg border border-border bg-surface p-5">
+              <li
+                key={item.title}
+                className="rounded-xl border border-border bg-surface p-5 shadow-card"
+              >
                 <h3 className="font-medium">{item.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
               </li>
