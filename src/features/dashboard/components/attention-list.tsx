@@ -20,12 +20,12 @@ export function AttentionList({ items, memberNames }: AttentionListProps) {
 
   return (
     <section aria-labelledby="attention-heading" className="space-y-3">
-      <h2 id="attention-heading" className="text-lg font-semibold">
+      <h2 id="attention-heading" className="text-xl font-bold">
         Needs attention
       </h2>
 
       {items.length === 0 ? (
-        <p className="rounded-lg border border-border bg-surface p-4 text-sm text-muted-foreground">
+        <p className="rounded-xl border border-border bg-surface p-4 text-sm text-muted-foreground shadow-card">
           Nothing needs attention right now.
         </p>
       ) : (
@@ -36,7 +36,10 @@ export function AttentionList({ items, memberNames }: AttentionListProps) {
           </p>
           <ul className="space-y-3">
             {visible.map(({ request, reasons }) => (
-              <li key={request.id} className="rounded-lg border border-border bg-surface p-4">
+              <li
+                key={request.id}
+                className="rounded-xl border border-l-4 border-border border-l-warning bg-surface p-4 shadow-card"
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/app/requests/${request.id}`}

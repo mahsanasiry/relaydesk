@@ -7,8 +7,8 @@ interface AlertProps {
 }
 
 const tones = {
-  error: "border-danger text-danger",
-  info: "border-border text-foreground",
+  error: "border-danger/40 bg-danger-soft text-danger",
+  info: "border-border bg-surface text-foreground",
 } as const;
 
 // Errors interrupt a screen reader; informational notes wait their turn.
@@ -16,9 +16,9 @@ export function Alert({ tone, title, children }: AlertProps) {
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={`rounded-md border bg-surface p-3 text-sm ${tones[tone]}`}
+      className={`rounded-lg border p-3 text-sm ${tones[tone]}`}
     >
-      {title ? <p className="font-medium">{title}</p> : null}
+      {title ? <p className="font-semibold">{title}</p> : null}
       <p>{children}</p>
     </div>
   );

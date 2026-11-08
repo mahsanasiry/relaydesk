@@ -15,14 +15,14 @@ export function TextField({ label, error, hint, className, ...props }: TextField
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium">
+      <label htmlFor={id} className="block text-sm font-semibold">
         {label}
       </label>
       <input
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        className={`mt-1 block min-h-11 w-full rounded-md border border-border bg-surface px-3 text-sm aria-invalid:border-danger ${className ?? ""}`.trim()}
+        className={`mt-1 block min-h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm transition-colors hover:border-muted-foreground aria-invalid:border-danger ${className ?? ""}`.trim()}
         {...props}
       />
       {hint ? (

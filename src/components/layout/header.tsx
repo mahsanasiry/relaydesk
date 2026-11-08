@@ -5,7 +5,7 @@ import { MobileNav } from "./mobile-nav";
 
 export function Header({ userName }: { userName: string }) {
   return (
-    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-surface px-4 py-2 sm:px-6">
+    <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-surface/85 px-4 py-2 backdrop-blur sm:px-6">
       <MobileNav userName={userName} />
       {/* A plain GET form: the query lands in the requests list URL, which owns the filters. */}
       <form action="/app/requests" role="search" className="min-w-0 flex-1 sm:max-w-md">
@@ -18,7 +18,7 @@ export function Header({ userName }: { userName: string }) {
           type="search"
           maxLength={SEARCH_MAX_LENGTH}
           placeholder="Search requests"
-          className="block min-h-11 w-full rounded-md border border-border bg-background px-3 text-sm"
+          className="block min-h-11 w-full rounded-lg border border-border bg-muted px-3 text-sm transition-colors placeholder:text-muted-foreground focus:bg-surface"
         />
       </form>
       <div className="ml-auto flex items-center gap-2">

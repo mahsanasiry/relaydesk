@@ -21,7 +21,7 @@ export function NavLinks({ label, onNavigate }: NavLinksProps) {
               href={item.href}
               aria-current={isNavActive(pathname, item.href) ? "page" : undefined}
               onClick={onNavigate}
-              className="flex min-h-11 items-center rounded-md px-3 text-sm font-medium hover:bg-muted aria-[current=page]:bg-muted aria-[current=page]:font-semibold"
+              className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors before:size-1.5 before:rounded-full before:bg-border hover:bg-muted hover:text-foreground aria-[current=page]:bg-primary-soft aria-[current=page]:font-semibold aria-[current=page]:text-primary aria-[current=page]:before:bg-primary"
             >
               {item.label}
             </Link>

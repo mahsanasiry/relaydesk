@@ -3,34 +3,46 @@
 :root {
   color-scheme: light dark;
 
-  --background: #f8fafc;
+  --background: #f2f4f9;
   --surface: #ffffff;
-  --foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --border: #cbd5e1;
-  --primary: #1d4ed8;
+  --foreground: #172033;
+  --muted: #e8ecf4;
+  --muted-foreground: #4f5a72;
+  --border: #d3d9e6;
+  --primary: #0e7068;
   --primary-foreground: #ffffff;
-  --ring: #1d4ed8;
-  --danger: #b91c1c;
-  --warning: #92400e;
-  --success: #15803d;
+  --primary-soft: #d8f0ed;
+  --ring: #0e7068;
+  --danger: #b4233a;
+  --danger-soft: #fde8eb;
+  --warning: #8f5200;
+  --warning-soft: #fdefd3;
+  --success: #0f6b32;
+  --success-soft: #dbf3e3;
+  --glow: rgb(14 112 104 / 0.1);
+  --card-shadow: 0 1px 2px rgb(23 32 51 / 0.05), 0 6px 16px -8px rgb(23 32 51 / 0.16);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b1120;
-    --surface: #111827;
-    --foreground: #e5e7eb;
-    --muted: #1f2937;
-    --muted-foreground: #9ca3af;
-    --border: #374151;
-    --primary: #60a5fa;
-    --primary-foreground: #0b1120;
-    --ring: #93c5fd;
-    --danger: #f87171;
-    --warning: #fbbf24;
-    --success: #4ade80;
+    --background: #0d1322;
+    --surface: #151d32;
+    --foreground: #e6eaf4;
+    --muted: #1e2843;
+    --muted-foreground: #a6b0c7;
+    --border: #2b3756;
+    --primary: #4fd1c5;
+    --primary-foreground: #06201e;
+    --primary-soft: #12373a;
+    --ring: #7fe3d9;
+    --danger: #ff8a98;
+    --danger-soft: #3c1823;
+    --warning: #f5b94a;
+    --warning-soft: #3a2b12;
+    --success: #5fd98a;
+    --success-soft: #123a26;
+    --glow: rgb(79 209 197 / 0.1);
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -8px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -43,19 +55,40 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
   --color-ring: var(--ring);
   --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
   --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --shadow-card: var(--card-shadow);
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 @layer base {
   body {
+    min-height: 100dvh;
     background-color: var(--background);
+    background-image: radial-gradient(60rem 28rem at 0% -8%, var(--glow), transparent 70%);
+    background-repeat: no-repeat;
     color: var(--foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--primary-soft);
   }
 
   :focus-visible {

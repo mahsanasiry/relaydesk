@@ -3,11 +3,11 @@ import type { ComponentPropsWithRef } from "react";
 export type ButtonVariant = "primary" | "secondary" | "danger";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center rounded-lg px-4 text-sm font-semibold shadow-sm transition-colors motion-safe:active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<ButtonVariant, string> = {
   primary: "bg-primary text-primary-foreground hover:bg-primary/90",
-  secondary: "border border-border bg-surface hover:bg-muted",
+  secondary: "border border-border bg-surface text-foreground hover:bg-muted",
   danger: "bg-danger text-background hover:bg-danger/90",
 };
 
