@@ -1,12 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { logIn, uniqueTitle } from "./support";
+import { uniqueTitle } from "./support";
 
 test.describe("a request from creation to blocked and back in the lists", () => {
   test("create, block with a reason, find it by URL, see it on the dashboard and in the activity", async ({
     page,
   }) => {
     const title = uniqueTitle("blocked request");
-    await logIn(page);
 
     // Create
     await page.goto("/app/requests/new");
@@ -60,7 +59,6 @@ test.describe("a request from creation to blocked and back in the lists", () => 
 
   test("a saved view can be created, applied and deleted", async ({ page }) => {
     const name = uniqueTitle("view");
-    await logIn(page);
 
     await page.goto("/app/requests?priority=low");
     await page.getByLabel("Save these filters as a view").fill(name);
@@ -78,7 +76,7 @@ test.describe("a request from creation to blocked and back in the lists", () => 
 
   test("the mobile menu reaches every section", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await logIn(page);
+    await page.goto("/app/dashboard");
 
     await page.getByRole("button", { name: "Open menu" }).click();
     await page.getByRole("dialog").getByRole("link", { name: "Projects" }).click();

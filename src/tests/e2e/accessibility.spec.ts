@@ -1,7 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { logIn } from "./support";
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
@@ -11,6 +10,9 @@ async function expectNoViolations(page: Page): Promise<void> {
 }
 
 test.describe("public pages", () => {
+  // A signed-in visitor is redirected away from /login and /signup, so these run signed out.
+  test.use({ storageState: { cookies: [], origins: [] } });
+
   for (const [path, heading] of [
     ["/", /.+/],
     ["/login", "Log in"],
@@ -37,10 +39,6 @@ test.describe("signed-in pages", () => {
     ["/app/notifications", "Notifications"],
     ["/app/settings", "Settings"],
   ] as const;
-
-  test.beforeEach(async ({ page }) => {
-    await logIn(page);
-  });
 
   for (const [path, heading] of pages) {
     test(`${path} has no accessibility violations`, async ({ page }) => {
