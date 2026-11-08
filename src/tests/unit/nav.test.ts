@@ -25,6 +25,7 @@ describe("NAV_ITEMS", () => {
       "/app/projects",
       "/app/clients",
       "/app/activity",
+      "/app/reports",
       "/app/notifications",
       "/app/settings",
     ]);

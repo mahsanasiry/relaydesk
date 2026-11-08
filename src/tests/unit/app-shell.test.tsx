@@ -53,7 +53,7 @@ describe("AppShell", () => {
     expect(within(nav).getByRole("link", { name: "Dashboard" })).not.toHaveAttribute(
       "aria-current",
     );
-    expect(within(nav).getAllByRole("link")).toHaveLength(7);
+    expect(within(nav).getAllByRole("link")).toHaveLength(8);
   });
 
   it("sends the header search to the requests list as a query", () => {

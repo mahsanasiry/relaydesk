@@ -36,6 +36,7 @@ test.describe("signed-in pages", () => {
     ["/app/clients", "Clients"],
     ["/app/clients/new", "New client"],
     ["/app/activity", "Activity"],
+    ["/app/reports", "Reports"],
     ["/app/notifications", "Notifications"],
     ["/app/settings", "Settings"],
   ] as const;

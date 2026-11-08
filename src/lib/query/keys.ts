@@ -13,6 +13,7 @@ export const queryKeys = {
   activity: ["requests", "activity"] as const,
   activityFeed: (query: string) => ["requests", "activity", "feed", query] as const,
   activityRecent: (limit: number) => ["requests", "activity", "recent", limit] as const,
+  blockerHistory: (days: number) => ["requests", "activity", "blockers", days] as const,
   workspace: ["workspace"] as const,
   workspaceSettings: ["workspace", "settings"] as const,
   workspaceDetails: ["workspace", "details"] as const,

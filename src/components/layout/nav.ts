@@ -9,6 +9,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/app/projects", label: "Projects" },
   { href: "/app/clients", label: "Clients" },
   { href: "/app/activity", label: "Activity" },
+  { href: "/app/reports", label: "Reports" },
   { href: "/app/notifications", label: "Notifications" },
   { href: "/app/settings", label: "Settings" },
 ];
