@@ -2,7 +2,27 @@
 
 RelayDesk is a workspace for small teams that work asynchronously and need to follow up on stuck work. It tracks requests like a board would, but it treats the reason work is stopped as data: a request cannot be Blocked without saying why, and the dashboard, filters and activity history can all be read by that reason.
 
-<!-- Add a screenshot at docs/screenshots/dashboard.png and replace this comment with: ![Dashboard](docs/screenshots/dashboard.png) -->
+**Live demo:** [relaydesk.mahsanasiry0.workers.dev](https://relaydesk.mahsanasiry0.workers.dev). The [sample workspace](https://relaydesk.mahsanasiry0.workers.dev/demo) opens without an account.
+
+![The dashboard: counts, what needs attention, and blocked work grouped by reason](docs/screenshots/dashboard.png)
+
+## Try it
+
+The sample workspace link signs in as a demo user in a workspace full of fictional requests, so there is nothing to register. The demo password is public, which means anyone can change the sample data. `npm run seed:reset` restores it.
+
+## Screenshots
+
+![Requests filtered to blocked work, with the reason on each row](docs/screenshots/requests.png)
+
+![A blocked request, showing why it is blocked and the history that led there](docs/screenshots/request-detail.png)
+
+![Reports: what is stopped right now, what has been stopped longest, and how long blockers last](docs/screenshots/reports.png)
+
+![The workspace activity feed, filterable by kind of event and by person](docs/screenshots/activity.png)
+
+The layout follows the screen width:
+
+<img src="docs/screenshots/mobile-dashboard.png" alt="The dashboard on a phone" width="320">
 
 ## The problem
 
@@ -22,9 +42,19 @@ Small agencies and product teams lose time to requests that quietly stall. A tas
 - **Request detail.** Edit, comments, a filterable activity timeline, related requests, and delete.
 - **Projects and clients.** Lists, detail pages, create and edit, with open-request counts.
 - **Workspace activity.** Every change across the workspace, filterable by kind of event and by person.
+- **Reports.** What is blocked right now, grouped by reason with how long each group has been stuck. The requests blocked the longest. How long blockers lasted over the last 90 days, worked out from the activity history.
 - **Notifications.** When a request is assigned to you, when someone comments on it, when a due date is close, and when a blocked request is unblocked. Unread count in the header, mark one or all as read.
 - **Saved views.** Four presets (My Open Requests, High Priority, Waiting for Client, Overdue) plus your own: save, rename, delete and apply.
 - **Settings.** Your name, the workspace name, and the two thresholds that drive Needs Attention.
+
+## Why it is designed this way
+
+- **A reason is data, not a comment.** The database refuses a Blocked request without one, so every screen and report can rely on it being there.
+- **Reports come from history the app already keeps.** The time a request has been blocked comes from when its status last changed. The time blockers took to clear comes from pairing status changes in the activity log. There are no separate analytics tables to drift out of sync.
+- **Status is never colour alone.** Each badge carries its name and a dot, and colour only reinforces it. Red is kept for blocked work, high priority and destructive actions, so it keeps its meaning.
+- **Nothing is scored.** Needs Attention follows four stated rules in a stated order. A person can read why a request is on the list and disagree with it.
+- **Lists live in the URL.** A filtered view can be bookmarked or sent to a teammate, and it survives a refresh.
+- **The scope is small on purpose.** There is no email, chat, payments or AI. The product is the model of why work is delayed, and the rest would only dilute it.
 
 ## Stack, and why
 
@@ -44,7 +74,7 @@ Small agencies and product teams lose time to requests that quietly stall. A tas
 src/
   app/            Routes, layouts and metadata. Pages are thin and delegate to features.
   features/       One folder per domain: requests, projects, clients, activity,
-                  comments, notifications, saved-views, settings, dashboard, auth.
+                  comments, notifications, saved-views, settings, dashboard, reports, auth.
   components/     ui (buttons, fields, dialogs), layout (shell, nav), shared (data list, pagination).
   lib/            supabase clients, query client and keys, validation schemas, utilities.
   tests/          unit (Vitest) and e2e (Playwright).
@@ -128,12 +158,15 @@ Requirements: Node.js 22.18 or newer (22.12 is enough to run the app; the seed s
 | `npm run test`                           | Unit and component tests.                |
 | `npm run test:e2e`                       | Browser journeys and accessibility scan. |
 | `npm run seed`, `npm run seed:reset`     | Load or reload demo data.                |
+| `npm run screenshots`                    | Regenerate the images in the README.     |
 
 ## Testing
 
 - **Unit and component tests** (`npm run test`) cover the pure rules (status changes, Needs Attention, filters, bulk patches, saved views, validation) and every screen's loading, empty, error and success states.
-- **End-to-end tests** (`npm run test:e2e`) need the app running against a Supabase project that holds the demo data. Install the browser once with `npx playwright install chromium`. If that download is not available where you are, set `E2E_BROWSER_CHANNEL` to `msedge` or `chrome` to use the browser already installed on the machine. The tests sign in as a demo user, create a request, block it with a reason, find it through the URL, check the dashboard and the activity, save and delete a view, and use the mobile menu. They clean up what they create. `E2E_EMAIL`, `E2E_PASSWORD` and `E2E_BASE_URL` override the defaults.
-- **Accessibility** is scanned with axe-core on every page against WCAG 2.0 and 2.1 level A and AA. Automated scans find only part of the problems, so screens were also checked by keyboard.
+- **End-to-end tests** (`npm run test:e2e`) need the app running against a Supabase project that holds the demo data. Install the browser once with `npx playwright install chromium`. If that download is not available where you are, set `E2E_BROWSER_CHANNEL` to `msedge` or `chrome` to use the browser already installed on the machine. The tests sign in once and reuse that session, because the hosted auth service limits how often an account can sign in. They then create a request, block it with a reason, find it through the URL, check the dashboard and the activity, save and delete a view, use the mobile menu and open the demo link. They clean up what they create. On a slow connection to Supabase a local run can time out, so the end-to-end workflow on GitHub is the reliable way to run them. `E2E_EMAIL`, `E2E_PASSWORD` and `E2E_BASE_URL` override the defaults.
+- **Accessibility** is scanned with axe-core on every page against WCAG 2.0 and 2.1 level A and AA. Automated scans find only part of the problems, so keyboard use and screen reader behaviour still need manual review.
+
+The README images come from `npm run screenshots`. It signs in through the demo link and saves the pictures to `docs/screenshots`. Set `E2E_BASE_URL` to capture a deployed site instead of the local server.
 
 ## Continuous integration
 
@@ -149,6 +182,8 @@ The app runs on Cloudflare Workers through the OpenNext adapter. `docs/deploymen
 - **Last write wins.** Two people editing the same request at once do not see each other's unsaved changes, and the later save overwrites the earlier one.
 - **No live updates.** Data refreshes on navigation and when the window regains focus. The notification badge polls once a minute.
 - **Activity is written by triggers, not application code.** That makes it reliable, but it means history is only recorded for signed-in users, and changes made with a service key are not logged.
+- **The Cloudflare adapter is young.** Running Next 16's `proxy.ts` on Workers is marked experimental by the adapter, and its build prints a warning. The adapter is a build-time dependency. Its build tooling has had audit advisories, which is why the production audit runs without development dependencies.
+- **Cleared-blocker times depend on the activity log.** A blocker that started before the 90-day window, or whose request was deleted while blocked, is left out rather than guessed at.
 - **The trigram index on request titles is not used yet.** Search runs in the browser. The index is there for when search moves server-side.
 
 ## Limitations

@@ -21,7 +21,8 @@
     "seed": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts",
     "seed:reset": "node --disable-warning=ExperimentalWarning scripts/seed/index.ts --reset",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "screenshots": "playwright test -c playwright.screenshots.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

@@ -74,6 +74,19 @@ npm run preview
 
 If the deploy is refused because the Worker is too large, the Workers Free plan limit is the usual cause. The plan limit for compressed size is documented by Cloudflare; moving to the Workers Paid plan raises it.
 
+### Deploying from GitHub Actions instead
+
+The `Deploy` workflow builds and deploys the Worker after a passing CI run on `main`, and can also be started by hand from the Actions tab. It does not depend on the Git connection that Cloudflare Workers Builds uses, which is useful when that connection is lost. It needs four repository secrets:
+
+| Secret                                 | Value                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | The project URL, the same value as in `.env.local`.                                   |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | The publishable key. It is public by design.                                          |
+| `CLOUDFLARE_API_TOKEN`                 | A token created from the "Edit Cloudflare Workers" template, limited to this account. |
+| `CLOUDFLARE_ACCOUNT_ID`                | The account ID shown on the Workers and Pages overview page.                          |
+
+Use either this workflow or Workers Builds for a given Worker. Running both deploys every commit twice.
+
 ## 5. Tell Supabase where the app lives
 
 In Supabase, Authentication, URL Configuration:
