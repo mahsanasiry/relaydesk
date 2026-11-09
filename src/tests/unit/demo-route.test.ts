@@ -13,6 +13,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: mocks.createClient }));
 
 beforeEach(() => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
   mocks.signIn.mockReset();
   mocks.createClient.mockReset();
   mocks.createClient.mockResolvedValue({ auth: { signInWithPassword: mocks.signIn } });
@@ -30,6 +31,10 @@ describe("GET /demo", () => {
     mocks.signIn.mockResolvedValue({ error: { code: "invalid_credentials" } });
 
     await expect(GET()).rejects.toThrow("redirect:/login?demo=unavailable");
+    expect(console.error).toHaveBeenCalledWith(
+      "The demo sign in was refused:",
+      "invalid_credentials",
+    );
   });
 
   it("does the same when the auth service cannot be reached", async () => {

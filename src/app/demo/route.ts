@@ -17,9 +17,13 @@ export async function GET(): Promise<never> {
       email: DEMO_EMAIL,
       password: DEMO_PASSWORD,
     });
-    signedIn = error === null;
-  } catch {
-    signedIn = false;
+    if (error) {
+      console.error("The demo sign in was refused:", error.code ?? error.message);
+    }
+    signedIn = !error;
+  } catch (error) {
+    // The visitor only sees "not available", so the reason has to be in the server log.
+    console.error("The demo sign in could not reach the auth service:", error);
   }
 
   // redirect() works by throwing, so it stays outside the try block above.
